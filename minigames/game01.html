@@ -8,6 +8,7 @@
     <style>
 #game {
     font-size: 18px;
+    margin: 0px;
 }
 #container1 {
     width: 336px;
@@ -32,6 +33,12 @@
         Управление ASDW или стрелками
         <pre id="game">
         </pre>
+        <div>
+            <button onclick="handleKey('a')">⬅️</button>
+            <button onclick="handleKey('d')">➡️</button>
+            <button onclick="handleKey('w')">⬆️</button>
+            <button onclick="handleKey('s')">⬇️</button>
+        </div>
         <div id="container2">
             <div id="score1">
                 Интерес: <span id="health">100</span>
@@ -160,7 +167,11 @@ function checkWin(){
 }
 
 function onKeyPress(ev){
-    let dr = KEYS[ev.key];
+    handleKey(ev.key);
+}
+
+function handleKey(key){
+    let dr = KEYS[key];
     if(dr){
         let r = add(player.coord, dr);
         if(checkCoord(r)){

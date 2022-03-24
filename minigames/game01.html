@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+#game {
+    font-size: 18px;
+}
+#container1 {
+    width: 336px;
+    text-align: center;
+    font: 16px monospace;
+}
+#container2 {
+    display: flex;
+}
+#score1 {
+    width: 50%;
+    text-align: left;
+}
+#score2 {
+    width: 50%;
+    text-align: right;
+}
+    </style>
+</head>
+<body>
+    <div id="container1">
+        Управление ASDW или стрелками
+        <pre id="game">
+        </pre>
+        <div id="container2">
+            <div id="score1">
+                Интерес: <span id="health">100</span>
+            </div>
+            <div id="score2">
+                Квалификация: <span id="attack">5</span>
+            </div>
+        </div>
+    </div>
+    <script>
+const L = console.log;
+function deb(x){
+    console.log(x);
+    return x;
+}
+
+function randint(n1, n2) {
+  return n1 + Math.floor(Math.random() * (n2 - n1));
+}
+
+function add(a, b){
+    return [a[0] + b[0], a[1] + b[1]];
+}
+
+function sub(a, b){
+    return [a[0] - b[0], a[1] - b[1]];
+}
+
+function mul(a, b){
+    return [a * b[0], a * b[1]];
+}
+
+function get2d(a, b){
+    return a[b[1]][b[0]];
+}
+
+function set2d(a, b, c){
+    a[b[1]][b[0]] = c;
+}
+
+const game = document.getElementById('game');
+const health = document.getElementById('health');
+const attack = document.getElementById('attack');
+
+const W = 15;
+const H = 15;
+
+let player = {
+    coord: [5, 5],
+    health: 100,
+    attack: 5
+};
+const GRADES = [
+    {
+        symbol:'📘',
+        health:[60,120],
+        attack:[30,60],
+    },
+    {
+        symbol:'📙',
+        health:[30,60],
+        attack:[15,30],
+    },
+    {
+        symbol:'📗',
+        health:[10,30],
+        attack:[5,15],
+    }
+]
+
+//let enemies = Array.from(Array(10).values(), _ => ())
+
+geomap = {};
+for (let i=0; i<30; i++){
+    const coord = [randint(0, W), randint(0, H)];
+    const grade = Math.floor(Math.sqrt(9*Math.random()));
+    const par = GRADES[grade];
+    geomap[coord] = {
+        //coord,
+        grade,
+        symbol: par.symbol,
+        health: randint(...par.health),
+        attack: randint(...par.attack),
+        loot: randint(0,3)
+    };
+}
+
+const KEYS = {
+    'a': [-1,0],
+    'ArrowLeft': [-1,0],
+    's': [0,1],
+    'ArrowDown': [0,1],
+    'd': [1,0],
+    'ArrowRight': [1,0],
+    'w': [0,-1],
+    'ArrowUp': [0,-1]
+};
+
+function clean(){
+    return Array.from(Array(H).values(), (_)=>Array(W).fill("⬜"));
+}
+
+function fromkey(k){
+    return k.split(',').map(i=>parseInt(i));
+}
+
+function repaint(){
+    board = clean()
+    for (let [k, v] of Object.entries(geomap)) {
+        set2d(board, fromkey(k), v.symbol);
+    }
+    set2d(board, player.coord, '👨‍🎓');
+    game.textContent = board.map(r => r.join('')).join('\n');
+    health.textContent = player.health;
+    attack.textContent = player.attack;
+}
+
+function checkCoord(r){
+    return r[0]>=0 && r[0]<W && r[1]>=0 && r[1]<H;
+}
+
+function checkWin(){
+    if(Object.entries(geomap).filter((v,k)=>v[1].grade!==undefined).length === 0){
+        endGame(true);
+    }
+}
+
+function onKeyPress(ev){
+    let dr = KEYS[ev.key];
+    if(dr){
+        let r = add(player.coord, dr);
+        if(checkCoord(r)){
+            let cell = geomap[r];
+            if(cell){
+                if(cell.attack){
+                    player.health -= cell.attack;
+                    cell.health -= player.attack;
+                    if(player.health<0){
+                        endGame(false);
+                    }
+                    if(cell.health<0){
+                        delete geomap[r];
+                        checkWin();
+                        if(cell.loot === 1){
+                            geomap[r] = {
+                                symbol: '💰',
+                                heal: true
+                            };
+                        } else if(cell.loot === 2){
+                            geomap[r] = {
+                                symbol: '🏅',
+                                promo: 5*(3-cell.grade)
+                            };
+                        }
+                    }
+                } else if(cell.heal) {
+                    player.health = 100;
+                    delete geomap[r];
+                    player.coord = r;
+                } else if(cell.promo) {
+                    player.attack += cell.promo;
+                    delete geomap[r];
+                    player.coord = r;
+                }
+            } else {
+                    player.coord = r;
+            }
+        }
+    repaint();
+    }
+}
+
+document.addEventListener('keydown', onKeyPress);
+
+function endGame(win){
+    document.removeEventListener('keydown', onKeyPress);
+    alert(win?'Теперь ты знаешь все!':'Тебе надоело учиться...')
+    location.reload();
+}
+
+repaint();
+
+//🧱 📗 📙 📘 👨‍🎓 ☀️ 🏆 💰 ▫️ ⬜ ⚡ 🏅
+    </script>
+</body>
+</html>

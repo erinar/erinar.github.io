@@ -18,6 +18,10 @@
 #container2 {
     display: flex;
 }
+.container3 {
+    width: 336px;
+    display: flex;
+}
 #score1 {
     width: 50%;
     text-align: left;
@@ -26,6 +30,20 @@
     width: 50%;
     text-align: right;
 }
+.b1 {
+    width: fit-content;
+    flex-grow: 1;
+    text-align: right;
+}
+.b2 {
+    width: fit-content;
+    flex-grow: 0;
+}
+.b3 {
+    width: fit-content;
+    flex-grow: 1;
+    text-align: left;
+}
     </style>
 </head>
 <body>
@@ -33,18 +51,36 @@
         Управление ASDW или стрелками
         <pre id="game">
         </pre>
-        <div>
-            <button onclick="handleKey('a')">⬅️</button>
-            <button onclick="handleKey('d')">➡️</button>
-            <button onclick="handleKey('w')">⬆️</button>
-            <button onclick="handleKey('s')">⬇️</button>
-        </div>
         <div id="container2">
             <div id="score1">
                 Интерес: <span id="health">100</span>
             </div>
             <div id="score2">
                 Квалификация: <span id="attack">5</span>
+            </div>
+        </div>
+        <div>
+            <div class="container3">
+                <div class="b1">
+
+                </div>
+                <div class="b2">
+                    <button onclick="handleKey('w')">⬆️</button>
+                </div>
+                <div class="b1">
+
+                </div>
+            </div>
+            <div class="container3">
+                <div class="b1">
+                    <button onclick="handleKey('a')">⬅️</button>
+                </div>
+                <div class="b2">
+                    <button onclick="handleKey('s')">⬇️</button>
+                </div>
+                <div class="b3">
+                    <button onclick="handleKey('d')">➡️</button>
+                </div>
             </div>
         </div>
     </div>

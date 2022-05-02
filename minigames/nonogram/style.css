@@ -1,0 +1,18 @@
+#board {
+    display: grid;
+    -grid-template-columns: repeat(5, 1em) 2em;
+    -grid-template-rows: 2em repeat(4, 1em);
+}
+
+#board .cell {
+    background-color: #BBB;
+    margin: 1px;
+}
+
+#board .on {
+    background-color: blue;
+}
+
+#board .ok {
+    background-color: lightgreen;
+}
